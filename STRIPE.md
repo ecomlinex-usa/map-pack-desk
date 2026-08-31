@@ -13,7 +13,7 @@ The public site never collects card numbers. Shoppers fill shop details on `chec
 | Payment Link id | `plink_1UAbVrAm0AY5F6XEkEZlLE7E` |
 | Success | `https://maps.codlinex.com/thank-you` |
 
-That Payment Link URL is wired in `checkout.html` (`href`, meta tag, and `window.MAP_PACK_STRIPE_LINK`). Do not invent a different `buy.stripe.com` URL. The homepage `#request` form is lead-only (Formsubmit → `info@codlinex.com`) and does not take a card.
+That Payment Link URL is wired in `checkout.html` (`href`, meta tag, and `window.MAP_PACK_STRIPE_LINK`). Do not invent a different `buy.stripe.com` URL. The homepage `#request` form is lead-only (Formsubmit → `orhan@codlinex.info`) and does not take a card.
 
 ## Offer (locked)
 

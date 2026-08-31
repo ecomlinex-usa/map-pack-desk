@@ -26,7 +26,7 @@ HTML, CSS, and JavaScript at the repository root. No Next.js. No build command f
 | `thank-you.html` | Confirmation after a shop request or Stripe return |
 | `terms.html` / `privacy.html` / `disclaimer.html` / `refund.html` | Legal |
 | `styles.css` | Industrial ink / paper / copper |
-| `form.js` | Validation, Formsubmit POST to info@codlinex.com |
+| `form.js` | Validation, Formsubmit POST to orhan@codlinex.info |
 | `checkout.js` | Stripe Payment Link or `/api/create-checkout-session` |
 | `api/create-checkout-session.js` | Optional Vercel function (needs Stripe env vars) |
 | `STRIPE.md` | Env vars and Payment Link setup |
@@ -35,7 +35,7 @@ HTML, CSS, and JavaScript at the repository root. No Next.js. No build command f
 
 `vercel.json` sets `"cleanUrls": true`.
 
-The homepage `#request` form POSTs to [Formsubmit](https://formsubmit.co) (`https://formsubmit.co/ajax/info@codlinex.com`). The first use of that inbox must be confirmed in email. Checkout also POSTs the shop there, then redirects to Stripe when a Payment Link or secret key is configured. If Stripe is not connected yet, checkout shows a banner and still emails the lead.
+The homepage `#request` form POSTs to [Formsubmit](https://formsubmit.co) (`https://formsubmit.co/ajax/orhan@codlinex.info`). The first use of that inbox must be confirmed in email. Checkout also POSTs the shop there, then redirects to Stripe when a Payment Link or secret key is configured. If Stripe is not connected yet, checkout shows a banner and still emails the lead.
 
 ## Local
 
@@ -47,4 +47,4 @@ Open `http://127.0.0.1:4173/`. Use `npx vercel dev` when testing `/api/create-ch
 
 ## Contact
 
-Public: [info@codlinex.com](mailto:info@codlinex.com)
+Public: [orhan@codlinex.info](mailto:orhan@codlinex.info)
