@@ -2,7 +2,7 @@
   "use strict";
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-  var INBOX = "info@codlinex.com";
+  var INBOX = "orhan@codlinex.info";
   var FORMSUBMIT = "https://formsubmit.co/ajax/" + INBOX;
   var THANKS = "https://maps.codlinex.com/thank-you";
 

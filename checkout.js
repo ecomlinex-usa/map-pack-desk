@@ -3,7 +3,7 @@
 
   var LIVE_LINK = "https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01";
   var BANNER_TEXT =
-    "Checkout is being connected. Send the shop on the homepage or email info@codlinex.com.";
+    "Checkout is being connected. Send the shop on the homepage or email orhan@codlinex.info.";
 
   function usableLink(value) {
     var link = String(value || "").trim();
