@@ -55,6 +55,7 @@
           <ul class="facts">
             <li>$497 setup</li>
             <li>$297 / month</li>
+            <li>First invoice $794</li>
             <li>90-day minimum</li>
             <li>US + Canada only</li>
             <li>Manager access — you stay owner</li>
@@ -158,8 +159,8 @@
           <div class="section-head">
             <p class="idx">02 — How it works</p>
             <div>
-              <h2>Send the shop. We invoice. You keep the keys.</h2>
-              <p class="lede">No card form on this site. If we take the shop, you pay an invoice. If we do not, we say so.</p>
+              <h2>Send the shop. Pay on Stripe. You keep the keys.</h2>
+              <p class="lede">If we take the shop, you pay on Stripe. If we do not, we say so. We do not collect card numbers on this page.</p>
             </div>
           </div>
           <div class="grid-4">
@@ -170,8 +171,8 @@
             </article>
             <article class="step">
               <p class="idx">02</p>
-              <h3>Invoice</h3>
-              <p class="muted">Setup $497 plus the first $297 month. This site never collects a card. Checkout is invoice intent only.</p>
+              <h3>Pay $794</h3>
+              <p class="muted">Setup $497 plus the first $297 month, due today. Then $297 on the same date each month. Card is processed by Stripe.</p>
             </article>
             <article class="step">
               <p class="idx">03</p>
@@ -237,7 +238,7 @@
           <div class="section-head">
             <p class="idx">05 — Pricing</p>
             <div>
-              <h2>One shop. One listing. Invoice, not a card form.</h2>
+              <h2>One shop. One listing. $794 to open the desk.</h2>
             </div>
           </div>
           <div class="price-board">
@@ -253,14 +254,18 @@
                   <b>$297</b>
                   <span>Each month</span>
                 </div>
+                <div>
+                  <b>$794</b>
+                  <span>Due today</span>
+                </div>
               </div>
+              <p class="due-line">Due today: $794 (setup + first month). Then $297/month.</p>
               <p class="fine">
-                90-day minimum. After the minimum, month-to-month per the
+                90-day minimum. After that, month-to-month. US + Canada. Four trades. One primary GBP. See
                 <a href="terms.html">Terms</a> and <a href="refund.html">Refund Policy</a>.
-                United States and Canada. HVAC, plumbing, electrical, roofing. One primary Google Business Profile.
               </p>
               <p style="margin: 1.1rem 0 0">
-                <a class="btn" href="checkout.html">Request the invoice</a>
+                <a class="btn" href="checkout.html">Start the desk</a>
               </p>
             </div>
             <div>
@@ -316,12 +321,12 @@
               <p>Ninety days. Setup is $497. The desk is $297 per month. See the Refund Policy for what is and is not returned.</p>
             </details>
             <details>
-              <summary>Is Stripe or a card form on this site?</summary>
-              <p>No. Checkout is invoice intent. We do not collect card numbers here. Payment happens on a separate invoice if we accept the shop.</p>
+              <summary>How do I pay?</summary>
+              <p>Pay by card on Stripe from checkout. Due today is $794 (setup + first month), then $297/month. We do not collect card numbers on this page. Map Pack Desk does not store full card numbers.</p>
             </details>
             <details>
               <summary>Does this form email you automatically?</summary>
-              <p>The public form is frontend-only. After you send it, use the mail link on the thank-you page so the desk actually receives the details.</p>
+              <p>Yes. The shop form posts to info@codlinex.com. The first time Formsubmit is used, that inbox must confirm the address. This form does not take a card.</p>
             </details>
           </div>
         </div>
@@ -336,9 +341,21 @@
               Name, city, phone, email. Maps URL if you have one. If the shop is outside the four trades or outside
               US/Canada, do not send it — we will decline.
             </p>
-            <p class="muted">Want the invoice path instead? Use <a href="checkout.html">checkout</a>. Same offer, terms checkboxes required.</p>
+            <p class="muted">Ready to pay $794 and start? Use <a href="checkout.html">checkout</a>. Same offer, terms and refund checkboxes required. This form does not take a card.</p>
           </div>
-          <form class="form" data-desk-form="request" action="thank-you.html" method="get">
+          <form
+            class="form"
+            data-desk-form="request"
+            action="https://formsubmit.co/info@codlinex.com"
+            method="post"
+          >
+            <input type="hidden" name="_next" value="https://maps.codlinex.com/thank-you" />
+            <input type="hidden" name="_subject" value="Map Pack Desk — shop request" />
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_template" value="table" />
+            <input type="hidden" name="_replyto" value="" />
+            <label class="hp" for="request-honey">Leave blank</label>
+            <input id="request-honey" class="hp" name="_honey" type="text" tabindex="-1" autocomplete="off" />
             <p class="banner" data-form-banner hidden></p>
             <div>
               <label for="business">Business name</label>
@@ -412,11 +429,11 @@
             Map Pack Desk
           </a>
           <p>A Codlinex desk for trade-shop Google Business Profiles. Manager access only. You own the listing.</p>
-          <p><a href="mailto:desk@maps.codlinex.com">desk@maps.codlinex.com</a></p>
+          <p><a href="mailto:info@codlinex.com">info@codlinex.com</a></p>
         </div>
         <div>
           <p class="idx">Offer</p>
-          <p>$497 setup · $297/month · 90-day minimum<br />US + Canada · four trades</p>
+          <p>$497 setup · $297/month · $794 due today<br />90-day minimum · US + Canada · four trades</p>
         </div>
         <nav class="legal-nav" aria-label="Legal">
           <a href="terms.html">Terms of Service</a>

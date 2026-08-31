@@ -3,11 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Request invoice — Map Pack Desk</title>
+    <title>Checkout — Map Pack Desk</title>
     <meta
       name="description"
-      content="Invoice intent for Map Pack Desk: $497 setup, $297 per month, 90-day minimum. No card collection on this page."
+      content="Pay $794 to start Map Pack Desk: $497 setup plus $297 for month 1, then $297/month. 90-day minimum. Card processed by Stripe."
     />
+    <!--
+      Live Stripe Payment Link (Ecomlinex): plink_1UAbVrAm0AY5F6XEkEZlLE7E
+      Product prod_VAxQiV1WLQC4yp — $497 setup (price_1UAbVUAm0AY5F6XEHvCfTjgW)
+      + $297/month (price_1UAbVVAm0AY5F6XE2bR3LHH8). Success → https://maps.codlinex.com/thank-you
+      Do not invent another checkout URL. Do not put a secret key in this file.
+    -->
+    <meta name="map-pack-stripe-link" content="https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -36,30 +43,58 @@
     </header>
 
     <main id="main" class="page">
-      <div class="wrap split">
+      <div class="wrap split checkout-layout">
         <div>
-          <p class="kicker">Checkout · invoice intent</p>
-          <h1>No card on this page.</h1>
+          <p class="kicker">Checkout</p>
+          <h1>Pay $794 to start the desk.</h1>
           <p class="lede">
-            Stripe is not connected. Submitting this form is a request that we send an invoice if the shop is a fit —
-            $497 setup and $297 for the first month, then $297 each month through the 90-day minimum.
+            Setup plus the first month is due today. Then $297 on the same date each month through the 90-day minimum,
+            then month-to-month. Pay by card on Stripe. We do not collect card numbers on this page.
           </p>
-          <ul class="facts">
-            <li>$497 setup</li>
-            <li>$297 / month</li>
-            <li>90-day minimum</li>
-            <li>Manager access only</li>
-          </ul>
-          <div class="legal-card">
-            <h2>What you are asking for</h2>
-            <p class="muted">
-              One primary Google Business Profile desk seat for an HVAC, plumbing, electrical, or roofing shop in the
-              United States or Canada. You keep owner access. We do not promise rankings, lead counts, or reviews.
-            </p>
-          </div>
+          <aside class="pay-summary" aria-label="Payment summary">
+            <h2>Payment summary</h2>
+            <dl class="pay-rows">
+              <div>
+                <dt>Product</dt>
+                <dd>Map Pack Desk</dd>
+              </div>
+              <div>
+                <dt>Setup (one time)</dt>
+                <dd>$497</dd>
+              </div>
+              <div>
+                <dt>Month 1 operations</dt>
+                <dd>$297</dd>
+              </div>
+              <div class="due">
+                <dt>Due today</dt>
+                <dd>$794</dd>
+              </div>
+            </dl>
+            <ul class="pay-notes">
+              <li>Then $297 on the same date each month</li>
+              <li>90-day minimum, then month-to-month</li>
+              <li>Manager access only; client stays GBP owner</li>
+              <li>US + Canada; four trades; one primary listing</li>
+              <li>No rankings / no lead counts / no fake reviews</li>
+              <li>Pay by card on Stripe (we do not collect card numbers on this page)</li>
+            </ul>
+          </aside>
         </div>
 
-        <form class="form" data-desk-form="checkout" action="thank-you.html" method="get">
+        <form
+          class="form"
+          data-desk-form="checkout"
+          action="https://formsubmit.co/info@codlinex.com"
+          method="post"
+        >
+          <input type="hidden" name="_next" value="https://maps.codlinex.com/thank-you" />
+          <input type="hidden" name="_subject" value="Map Pack Desk — checkout" />
+          <input type="hidden" name="_captcha" value="false" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="_replyto" value="" />
+          <label class="hp" for="checkout-honey">Leave blank</label>
+          <input id="checkout-honey" class="hp" name="_honey" type="text" tabindex="-1" autocomplete="off" />
           <p class="banner" data-form-banner hidden></p>
           <div>
             <label for="business">Business name</label>
@@ -113,7 +148,7 @@
             <p class="err" data-error-for="mapsUrl"></p>
           </div>
           <div>
-            <label for="notes">Invoice notes (optional)</label>
+            <label for="notes">Notes (optional)</label>
             <textarea id="notes" name="notes"></textarea>
           </div>
           <div>
@@ -130,7 +165,12 @@
             </label>
             <p class="err" data-error-for="agreeRefund"></p>
           </div>
-          <button class="btn" type="submit">Request the invoice</button>
+          <button class="hp" type="submit">Pay $794 to start</button>
+          <a
+            class="btn"
+            data-pay-cta
+            href="https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01"
+          >Pay $794 to start</a>
         </form>
       </div>
     </main>
@@ -139,9 +179,9 @@
       <div class="wrap foot-grid">
         <div>
           <a class="mark" href="index.html">Map Pack Desk</a>
-          <p><a href="mailto:desk@maps.codlinex.com">desk@maps.codlinex.com</a></p>
+          <p><a href="mailto:info@codlinex.com">info@codlinex.com</a></p>
         </div>
-        <p>No card collection on maps.codlinex.com. Invoice follows only if we accept the shop.</p>
+        <p>Card is processed by Stripe. We never see the full card number.</p>
         <nav class="legal-nav" aria-label="Legal">
           <a href="terms.html">Terms</a>
           <a href="privacy.html">Privacy</a>
@@ -150,6 +190,11 @@
         </nav>
       </div>
     </footer>
+    <script>
+      // Live Payment Link — do not replace with a different buy.stripe.com URL.
+      window.MAP_PACK_STRIPE_LINK = "https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01";
+    </script>
+    <script src="checkout.js"></script>
     <script src="form.js"></script>
   </body>
 </html>
