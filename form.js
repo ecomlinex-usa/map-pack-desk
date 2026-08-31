@@ -2,6 +2,9 @@
   "use strict";
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var INBOX = "info@codlinex.com";
+  var FORMSUBMIT = "https://formsubmit.co/ajax/" + INBOX;
+  var THANKS = "https://maps.codlinex.com/thank-you";
 
   function digits(value) {
     return String(value || "").replace(/\D/g, "");
@@ -45,7 +48,6 @@
   }
 
   function validate(form, requireLegal) {
-    var ok = true;
     var business = required(form, "business", "the shop name");
     var city = required(form, "city", "city");
     var phoneOk = required(form, "phone", "a phone number");
@@ -87,10 +89,11 @@
       }
     }
 
-    ok = business && city && phoneOk && emailOk && mapsOk && termsOk && refundOk;
+    var ok = business && city && phoneOk && emailOk && mapsOk && termsOk && refundOk;
     var banner = form.querySelector("[data-form-banner]");
     if (banner) {
       banner.hidden = ok;
+      banner.classList.remove("banner-warn");
       banner.textContent = ok ? "" : "Fix the highlighted fields, then send again.";
     }
     if (!ok) {
@@ -100,17 +103,104 @@
     return ok;
   }
 
-  function collect(form, intent) {
-    var params = new URLSearchParams();
+  function readFields(form) {
     var names = ["business", "city", "region", "country", "trade", "phone", "email", "mapsUrl", "notes"];
+    var fields = {};
     names.forEach(function (name) {
       var field = form.elements[name];
-      if (!field) return;
-      var value = String(field.value || "").trim();
-      if (value) params.set(name, value);
+      fields[name] = field ? String(field.value || "").trim() : "";
     });
-    params.set("intent", intent);
-    return params;
+    return fields;
+  }
+
+  function formsubmitPayload(form, intent) {
+    var fields = readFields(form);
+    var honey = form.elements._honey ? String(form.elements._honey.value || "").trim() : "";
+    return {
+      fields: fields,
+      honey: honey,
+      body: {
+        business: fields.business,
+        city: fields.city,
+        region: fields.region,
+        country: fields.country,
+        trade: fields.trade,
+        phone: fields.phone,
+        email: fields.email,
+        mapsUrl: fields.mapsUrl,
+        notes: fields.notes,
+        form: intent,
+        _subject:
+          intent === "checkout" ? "Map Pack Desk — checkout" : "Map Pack Desk — shop request",
+        _next: THANKS,
+        _replyto: fields.email,
+        _captcha: "false",
+        _template: "table"
+      }
+    };
+  }
+
+  function postFormsubmit(payload) {
+    if (payload.honey) {
+      return Promise.resolve({ skipped: true });
+    }
+    return fetch(FORMSUBMIT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload.body)
+    }).then(function (res) {
+      return res.json().catch(function () {
+        return {};
+      }).then(function (data) {
+        if (!res.ok) {
+          throw new Error("formsubmit_http");
+        }
+        if (data && (data.success === false || data.success === "false")) {
+          throw new Error("formsubmit_rejected");
+        }
+        return data;
+      });
+    });
+  }
+
+  function rememberThanks(fields, intent) {
+    try {
+      sessionStorage.setItem(
+        "mapPackThanks",
+        JSON.stringify({
+          intent: intent,
+          business: fields.business,
+          city: fields.city,
+          region: fields.region,
+          country: fields.country,
+          trade: fields.trade,
+          phone: fields.phone,
+          email: fields.email,
+          mapsUrl: fields.mapsUrl
+        })
+      );
+    } catch (err) {
+      /* ignore quota / private mode */
+    }
+  }
+
+  function goThanks() {
+    window.location.assign("thank-you.html");
+  }
+
+  function setBusy(form, busy, label) {
+    var button = form.querySelector('button[type="submit"]');
+    if (!button) return;
+    if (busy) {
+      if (!button.getAttribute("data-idle-label")) {
+        button.setAttribute("data-idle-label", button.textContent);
+      }
+      button.disabled = true;
+      button.textContent = label || "Sending…";
+    } else {
+      button.disabled = false;
+      button.textContent = button.getAttribute("data-idle-label") || button.textContent;
+    }
   }
 
   document.querySelectorAll("form[data-desk-form]").forEach(function (form) {
@@ -119,20 +209,88 @@
       event.preventDefault();
       var checkout = form.getAttribute("data-desk-form") === "checkout";
       if (!validate(form, checkout)) return;
-      var intent = checkout ? "invoice" : "request";
-      window.location.assign("thank-you.html?" + collect(form, intent).toString());
+
+      var intent = checkout ? "checkout" : "request";
+      var packed = formsubmitPayload(form, intent);
+      var replyField = form.elements._replyto;
+      if (replyField) replyField.value = packed.fields.email;
+      var banner = form.querySelector("[data-form-banner]");
+      setBusy(form, true, checkout ? "Opening Stripe…" : "Sending…");
+
+      postFormsubmit(packed)
+        .catch(function () {
+          if (banner && !checkout) {
+            banner.hidden = false;
+            banner.textContent =
+              "Could not reach the inbox. Email " + INBOX + " with the same shop details.";
+          }
+          return { failed: true };
+        })
+        .then(function (result) {
+          rememberThanks(packed.fields, intent);
+          if (!checkout) {
+            if (result && result.failed) {
+              setBusy(form, false);
+              return;
+            }
+            goThanks();
+            return;
+          }
+          var start = window.MapPackDesk && window.MapPackDesk.startCheckout;
+          if (typeof start !== "function") {
+            if (banner) {
+              banner.hidden = false;
+              banner.classList.add("banner-warn");
+              banner.textContent =
+                "Checkout is being connected. Send the shop on the homepage or email " +
+                INBOX +
+                ".";
+            }
+            setBusy(form, false);
+            return;
+          }
+          return start(packed.fields, banner).then(function (redirected) {
+            if (!redirected) {
+              if (banner && result && !result.failed) {
+                banner.hidden = false;
+                banner.classList.add("banner-warn");
+                banner.textContent =
+                  "Checkout is being connected. We still emailed this shop to " +
+                  INBOX +
+                  ". Send the shop on the homepage or email " +
+                  INBOX +
+                  ".";
+              } else if (banner && result && result.failed) {
+                banner.hidden = false;
+                banner.classList.add("banner-warn");
+                banner.textContent =
+                  "Checkout is being connected. Send the shop on the homepage or email " +
+                  INBOX +
+                  ".";
+              }
+              setBusy(form, false);
+            }
+          });
+        });
     });
   });
 
   var thanks = document.querySelector("[data-thanks]");
   if (thanks) {
+    var stored = {};
+    try {
+      stored = JSON.parse(sessionStorage.getItem("mapPackThanks") || "{}") || {};
+    } catch (err) {
+      stored = {};
+    }
     var query = new URLSearchParams(window.location.search);
-    var intent = query.get("intent") || "request";
-    var business = query.get("business") || "";
-    var email = query.get("email") || "";
-    var trade = query.get("trade") || "";
-    var city = query.get("city") || "";
-    var region = query.get("region") || "";
+    var intent = stored.intent || query.get("intent") || "request";
+    var paid = query.get("paid") === "1" || intent === "paid";
+    var business = stored.business || query.get("business") || "";
+    var email = stored.email || query.get("email") || "";
+    var trade = stored.trade || query.get("trade") || "";
+    var city = stored.city || query.get("city") || "";
+    var region = stored.region || query.get("region") || "";
 
     var kicker = thanks.querySelector("[data-thanks-kicker]");
     var title = thanks.querySelector("[data-thanks-title]");
@@ -141,20 +299,19 @@
     var mail = thanks.querySelector("[data-thanks-mail]");
 
     if (kicker) {
-      kicker.textContent = intent === "invoice" ? "Invoice request" : "Shop received";
+      kicker.textContent = paid ? "Payment" : intent === "checkout" ? "Checkout" : "Shop received";
     }
     if (title) {
-      title.textContent = business
-        ? (intent === "invoice" ? "Invoice intent for " + business : "We have " + business + ".")
-        : intent === "invoice"
-          ? "Invoice intent received."
-          : "Shop received.";
+      title.textContent = business ? "We have " + business + "." : "Shop received.";
     }
     if (lead) {
-      lead.textContent =
-        intent === "invoice"
-          ? "This page does not collect a card. If the shop is a fit, we send a separate invoice for the $497 setup and the first $297 month. No ranking, lead-count, or review promises attach to that invoice."
-          : "This form does not write to a server. Use the mail link below if you want the same details in an inbox we actually read.";
+      lead.textContent = paid
+        ? "If the card went through, Stripe sends the receipt to the email on the payment. We also have the shop at " +
+          INBOX +
+          "."
+        : "We received the shop at " +
+          INBOX +
+          ". If you paid, Stripe sends the receipt. No ranking, lead-count, or review promises attach to this desk.";
     }
     if (meta) {
       var bits = [];
@@ -165,26 +322,22 @@
       meta.hidden = bits.length === 0;
     }
     if (mail) {
-      var subject =
-        intent === "invoice"
-          ? "Map Pack Desk invoice intent" + (business ? " — " + business : "")
-          : "Map Pack Desk shop" + (business ? " — " + business : "");
+      var subject = "Map Pack Desk shop" + (business ? " — " + business : "");
       var body = [
-        "Intent: " + (intent === "invoice" ? "invoice (no card)" : "request"),
         "Business: " + (business || ""),
         "Trade: " + (trade || ""),
         "City: " + (city || ""),
         "Region: " + (region || ""),
-        "Country: " + (query.get("country") || ""),
-        "Phone: " + (query.get("phone") || ""),
+        "Country: " + (stored.country || query.get("country") || ""),
+        "Phone: " + (stored.phone || query.get("phone") || ""),
         "Email: " + (email || ""),
-        "Maps URL: " + (query.get("mapsUrl") || ""),
-        "",
-        query.get("notes") || ""
+        "Maps URL: " + (stored.mapsUrl || query.get("mapsUrl") || "")
       ].join("\n");
       mail.setAttribute(
         "href",
-        "mailto:desk@maps.codlinex.com?subject=" +
+        "mailto:" +
+          INBOX +
+          "?subject=" +
           encodeURIComponent(subject) +
           "&body=" +
           encodeURIComponent(body)

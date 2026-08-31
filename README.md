@@ -7,29 +7,35 @@ Production: [https://maps.codlinex.com](https://maps.codlinex.com)
 ## Offer
 
 - **$497** setup + **$297**/month
-- **90-day** minimum
+- **Due today: $794** (setup + first month), then $297/month
+- **90-day** minimum, then month-to-month
 - US + Canada only
 - Four trades: HVAC, plumbing, electrical, roofing
 - Manager access only — the shop keeps Google Business Profile ownership
 - No ranking, lead-count, or fake-review promises
-- Checkout is **invoice intent**. Stripe is not connected; this site does not collect cards
+- Pay by card on Stripe. This site does not collect card numbers.
 
 ## Stack
 
-HTML, CSS, and JavaScript at the repository root. No Next.js, no npm, no build command.
+HTML, CSS, and JavaScript at the repository root. No Next.js. No build command for the pages.
 
 | File | Role |
 | --- | --- |
 | `index.html` | Sales page |
-| `checkout.html` | Invoice intent + terms/refund checkboxes |
-| `thank-you.html` | Frontend confirmation |
+| `checkout.html` | Shop details + pay $794 via Stripe |
+| `thank-you.html` | Confirmation after a shop request or Stripe return |
 | `terms.html` / `privacy.html` / `disclaimer.html` / `refund.html` | Legal |
 | `styles.css` | Industrial ink / paper / copper |
-| `form.js` | Client-side validation, then GET to thank-you |
+| `form.js` | Validation, Formsubmit POST to info@codlinex.com |
+| `checkout.js` | Stripe Payment Link or `/api/create-checkout-session` |
+| `api/create-checkout-session.js` | Optional Vercel function (needs Stripe env vars) |
+| `STRIPE.md` | Env vars and Payment Link setup |
 | `favicon.svg` | Map pin on ink, copper bar |
 | `images/` | Hero, trades, manager, monthly |
 
-`vercel.json` sets `"cleanUrls": true`. Vercel can serve the root as a static site with no build.
+`vercel.json` sets `"cleanUrls": true`.
+
+The homepage `#request` form POSTs to [Formsubmit](https://formsubmit.co) (`https://formsubmit.co/ajax/info@codlinex.com`). The first use of that inbox must be confirmed in email. Checkout also POSTs the shop there, then redirects to Stripe when a Payment Link or secret key is configured. If Stripe is not connected yet, checkout shows a banner and still emails the lead.
 
 ## Local
 
@@ -37,8 +43,8 @@ HTML, CSS, and JavaScript at the repository root. No Next.js, no npm, no build c
 python3 -m http.server 4173
 ```
 
-Open `http://127.0.0.1:4173/`.
+Open `http://127.0.0.1:4173/`. Use `npx vercel dev` when testing `/api/create-checkout-session` (see `STRIPE.md`).
 
 ## Contact
 
-desk@maps.codlinex.com
+Public: [info@codlinex.com](mailto:info@codlinex.com)
