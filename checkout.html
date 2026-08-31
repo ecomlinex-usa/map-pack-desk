@@ -9,12 +9,12 @@
       content="Pay $794 to start Map Pack Desk: $497 setup plus $297 for month 1, then $297/month. 90-day minimum. Card processed by Stripe."
     />
     <!--
-      Replace STRIPE_PAYMENT_LINK with the live Stripe Payment Link once created
-      (Checkout for $497 setup + $297 subscription, or a $794 first invoice + $297/mo recurring).
-      Prefer Vercel env STRIPE_PAYMENT_LINK or /api/create-checkout-session (STRIPE_SECRET_KEY + price IDs).
-      Do not put a secret key in this file.
+      Live Stripe Payment Link (Ecomlinex): plink_1UAbVrAm0AY5F6XEkEZlLE7E
+      Product prod_VAxQiV1WLQC4yp — $497 setup (price_1UAbVUAm0AY5F6XEHvCfTjgW)
+      + $297/month (price_1UAbVVAm0AY5F6XE2bR3LHH8). Success → https://maps.codlinex.com/thank-you
+      Do not invent another checkout URL. Do not put a secret key in this file.
     -->
-    <meta name="map-pack-stripe-link" content="" />
+    <meta name="map-pack-stripe-link" content="https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01" />
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -165,7 +165,12 @@
             </label>
             <p class="err" data-error-for="agreeRefund"></p>
           </div>
-          <button class="btn" type="submit">Pay $794 to start</button>
+          <button class="hp" type="submit">Pay $794 to start</button>
+          <a
+            class="btn"
+            data-pay-cta
+            href="https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01"
+          >Pay $794 to start</a>
         </form>
       </div>
     </main>
@@ -186,9 +191,8 @@
       </div>
     </footer>
     <script>
-      // Replace STRIPE_PAYMENT_LINK with the live Stripe Payment Link once created
-      // (Checkout for $497 setup + $297 subscription, or a $794 first invoice + $297/mo recurring).
-      window.MAP_PACK_STRIPE_LINK = "";
+      // Live Payment Link — do not replace with a different buy.stripe.com URL.
+      window.MAP_PACK_STRIPE_LINK = "https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01";
     </script>
     <script src="checkout.js"></script>
     <script src="form.js"></script>

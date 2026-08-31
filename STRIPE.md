@@ -1,8 +1,19 @@
 # Stripe for Map Pack Desk
 
-The public site never collects card numbers. Shoppers fill shop details on `checkout.html`, then pay on Stripe Checkout (hosted) or a Payment Link. Map Pack Desk does not store full card numbers.
+The public site never collects card numbers. Shoppers fill shop details on `checkout.html` (trade, listing, 90-day terms), then pay on the **live Payment Link**. Map Pack Desk does not store full card numbers.
 
-Do **not** commit secret keys, publishable keys, or a live Payment Link if you do not want it in git. Put secrets in the Vercel project **maps-codlinex** (Production + Preview).
+## Live objects (Ecomlinex Stripe)
+
+| Item | ID / URL |
+| --- | --- |
+| Product | `prod_VAxQiV1WLQC4yp` Map Pack Desk |
+| Setup (one time $497) | `price_1UAbVUAm0AY5F6XEHvCfTjgW` |
+| Monthly ($297/month) | `price_1UAbVVAm0AY5F6XE2bR3LHH8` |
+| Payment Link | https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01 |
+| Payment Link id | `plink_1UAbVrAm0AY5F6XEkEZlLE7E` |
+| Success | `https://maps.codlinex.com/thank-you` |
+
+That Payment Link URL is wired in `checkout.html` (`href`, meta tag, and `window.MAP_PACK_STRIPE_LINK`). Do not invent a different `buy.stripe.com` URL. The homepage `#request` form is lead-only (Formsubmit → `info@codlinex.com`) and does not take a card.
 
 ## Offer (locked)
 
@@ -14,42 +25,17 @@ Do **not** commit secret keys, publishable keys, or a live Payment Link if you d
 - Success URL: `https://maps.codlinex.com/thank-you`
 - Cancel URL: `https://maps.codlinex.com/checkout`
 
-## Environment variables
+## Optional API (not required while the Payment Link is live)
 
-Set these on Vercel. Leave them empty until the live Stripe objects exist. The checkout page will show:
+`/api/create-checkout-session` can still build a Checkout Session if these Vercel env vars are set. Checkout JS currently **uses the Payment Link first** so the customer always hits the live link above.
 
-> Checkout is being connected. Send the shop on the homepage or email info@codlinex.com.
-
-Shop details are still POSTed to Formsubmit (`info@codlinex.com`) so the lead is not lost.
-
-| Variable | Required when | What to put |
-| --- | --- | --- |
-| `STRIPE_SECRET_KEY` | Using `/api/create-checkout-session` | Restricted API key (`rk_…`) preferred, or `sk_…`. Never a publishable `pk_` key. |
-| `STRIPE_PRICE_SETUP` | With the secret key | Price ID (`price_…`) for the **$497 one-time** setup fee |
-| `STRIPE_PRICE_MONTHLY` | With the secret key | Price ID (`price_…`) for the **$297/month** recurring desk fee |
-| `STRIPE_PAYMENT_LINK` | Optional fallback | Full Payment Link URL (`https://buy.stripe.com/…`) |
-| `PUBLIC_SITE_URL` | Optional | Defaults to `https://maps.codlinex.com`. Set on Preview if you want success/cancel to stay on the preview host. |
-
-Create **two Prices** on one Product named Map Pack Desk (or two products if you prefer separate names on the Stripe invoice):
-
-1. One-time price, USD 49700 cents — setup.
-2. Recurring monthly price, USD 29700 cents — operations.
-
-Checkout Session `mode` is `subscription`. Stripe charges the one-time price on the first invoice together with month 1, then invoices $297 each month.
-
-## Payment Link (no API)
-
-If you do not want a secret key on Vercel yet:
-
-1. In Stripe, create a Payment Link for **$497 setup + $297 subscription**, or a **$794 first invoice + $297/month** recurring.
-2. Either:
-   - Set `STRIPE_PAYMENT_LINK` on Vercel, or
-   - Paste the URL into `checkout.html`:
-     - `window.MAP_PACK_STRIPE_LINK = "https://buy.stripe.com/…"`
-     - and/or `<meta name="map-pack-stripe-link" content="https://buy.stripe.com/…">`
-3. Replace the `STRIPE_PAYMENT_LINK` placeholder comment in `checkout.html` when the live link exists.
-
-`checkout.js` prefers `/api/create-checkout-session` when the function returns a `url`, then the meta/`window` Payment Link, then the in-page banner.
+| Variable | What to put |
+| --- | --- |
+| `STRIPE_SECRET_KEY` | Restricted API key (`rk_…`) preferred, or `sk_…`. Never a publishable `pk_` key. Never commit it. |
+| `STRIPE_PRICE_SETUP` | `price_1UAbVUAm0AY5F6XEHvCfTjgW` |
+| `STRIPE_PRICE_MONTHLY` | `price_1UAbVVAm0AY5F6XE2bR3LHH8` |
+| `STRIPE_PAYMENT_LINK` | `https://buy.stripe.com/00weVc2DF72n8xX5mS1ck01` |
+| `PUBLIC_SITE_URL` | Optional. Defaults to `https://maps.codlinex.com`. |
 
 ## Tax
 
@@ -57,12 +43,8 @@ If you will charge US or Canadian shops, consider [Stripe Tax for recurring paym
 
 ## Local
 
-The static pages do not need npm. The checkout API does:
-
 ```bash
-npm install
-# STRIPE_SECRET_KEY / prices are read from the environment when Vercel (or `vercel dev`) runs the function
 python3 -m http.server 4173
 ```
 
-`python3 -m http.server` will not run `/api/create-checkout-session`. Use `npx vercel dev` when testing the function.
+Open `http://127.0.0.1:4173/checkout.html`. After validation, the Pay $794 control should send you to the Payment Link (card fields stay on Stripe).

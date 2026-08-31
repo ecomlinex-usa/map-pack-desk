@@ -22,7 +22,7 @@ HTML, CSS, and JavaScript at the repository root. No Next.js. No build command f
 | File | Role |
 | --- | --- |
 | `index.html` | Sales page |
-| `checkout.html` | Shop details + pay $794 via Stripe |
+| `checkout.html` | Shop details + Pay $794 → live Stripe Payment Link |
 | `thank-you.html` | Confirmation after a shop request or Stripe return |
 | `terms.html` / `privacy.html` / `disclaimer.html` / `refund.html` | Legal |
 | `styles.css` | Industrial ink / paper / copper |

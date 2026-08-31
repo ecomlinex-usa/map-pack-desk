@@ -189,22 +189,34 @@
   }
 
   function setBusy(form, busy, label) {
-    var button = form.querySelector('button[type="submit"]');
+    var button = form.querySelector("[data-pay-cta]") || form.querySelector("button[type='submit']");
     if (!button) return;
     if (busy) {
       if (!button.getAttribute("data-idle-label")) {
         button.setAttribute("data-idle-label", button.textContent);
       }
-      button.disabled = true;
+      button.setAttribute("aria-disabled", "true");
+      if ("disabled" in button) button.disabled = true;
+      button.style.pointerEvents = "none";
       button.textContent = label || "Sending…";
     } else {
-      button.disabled = false;
+      button.removeAttribute("aria-disabled");
+      if ("disabled" in button) button.disabled = false;
+      button.style.pointerEvents = "";
       button.textContent = button.getAttribute("data-idle-label") || button.textContent;
     }
   }
 
   document.querySelectorAll("form[data-desk-form]").forEach(function (form) {
     form.setAttribute("novalidate", "novalidate");
+    var payCta = form.querySelector("[data-pay-cta]");
+    if (payCta) {
+      payCta.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (typeof form.requestSubmit === "function") form.requestSubmit();
+        else form.dispatchEvent(new Event("submit", { cancelable: true, bubbles: true }));
+      });
+    }
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       var checkout = form.getAttribute("data-desk-form") === "checkout";
