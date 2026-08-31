@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Request invoice — Map Pack Desk</title>
+    <meta
+      name="description"
+      content="Invoice intent for Map Pack Desk: $497 setup, $297 per month, 90-day minimum. No card collection on this page."
+    />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <a class="mark" href="index.html">
+        <span class="mark-pin" aria-hidden="true">
+          <svg viewBox="0 0 16 16" fill="none"><path fill="#f3efe6" d="M8 1.4C5.6 1.4 3.7 3.2 3.7 5.5c0 3.1 4.3 9.1 4.3 9.1s4.3-6 4.3-9.1C12.3 3.2 10.4 1.4 8 1.4zm0 5.6A1.7 1.7 0 1 1 8 3.6a1.7 1.7 0 0 1 0 3.4z"/></svg>
+        </span>
+        Map Pack Desk
+      </a>
+      <input id="nav-toggle" class="nav-toggle" type="checkbox" />
+      <label class="menu-btn" for="nav-toggle">Menu</label>
+      <nav class="nav" aria-label="Primary">
+        <a href="index.html#included">Included</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a class="btn btn-sm" href="index.html#request">Send the shop</a>
+      </nav>
+    </header>
+
+    <main id="main" class="page">
+      <div class="wrap split">
+        <div>
+          <p class="kicker">Checkout · invoice intent</p>
+          <h1>No card on this page.</h1>
+          <p class="lede">
+            Stripe is not connected. Submitting this form is a request that we send an invoice if the shop is a fit —
+            $497 setup and $297 for the first month, then $297 each month through the 90-day minimum.
+          </p>
+          <ul class="facts">
+            <li>$497 setup</li>
+            <li>$297 / month</li>
+            <li>90-day minimum</li>
+            <li>Manager access only</li>
+          </ul>
+          <div class="legal-card">
+            <h2>What you are asking for</h2>
+            <p class="muted">
+              One primary Google Business Profile desk seat for an HVAC, plumbing, electrical, or roofing shop in the
+              United States or Canada. You keep owner access. We do not promise rankings, lead counts, or reviews.
+            </p>
+          </div>
+        </div>
+
+        <form class="form" data-desk-form="checkout" action="thank-you.html" method="get">
+          <p class="banner" data-form-banner hidden></p>
+          <div>
+            <label for="business">Business name</label>
+            <input id="business" name="business" autocomplete="organization" required />
+            <p class="err" data-error-for="business"></p>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="city">City</label>
+              <input id="city" name="city" autocomplete="address-level2" required />
+              <p class="err" data-error-for="city"></p>
+            </div>
+            <div>
+              <label for="region">State / province</label>
+              <input id="region" name="region" autocomplete="address-level1" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="country">Country</label>
+              <select id="country" name="country">
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+              </select>
+            </div>
+            <div>
+              <label for="trade">Trade</label>
+              <select id="trade" name="trade">
+                <option value="HVAC">HVAC</option>
+                <option value="Plumbing">Plumbing</option>
+                <option value="Electrical">Electrical</option>
+                <option value="Roofing">Roofing</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="phone">Phone</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" required />
+              <p class="err" data-error-for="phone"></p>
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+              <p class="err" data-error-for="email"></p>
+            </div>
+          </div>
+          <div>
+            <label for="mapsUrl">Google Maps URL (optional)</label>
+            <input id="mapsUrl" name="mapsUrl" type="url" placeholder="https://" />
+            <p class="err" data-error-for="mapsUrl"></p>
+          </div>
+          <div>
+            <label for="notes">Invoice notes (optional)</label>
+            <textarea id="notes" name="notes"></textarea>
+          </div>
+          <div>
+            <label class="check" for="agreeTerms">
+              <input id="agreeTerms" name="agreeTerms" type="checkbox" />
+              <span>I agree to the <a href="terms.html">Terms of Service</a>.</span>
+            </label>
+            <p class="err" data-error-for="agreeTerms"></p>
+          </div>
+          <div>
+            <label class="check" for="agreeRefund">
+              <input id="agreeRefund" name="agreeRefund" type="checkbox" />
+              <span>I agree to the <a href="refund.html">Refund Policy</a>, including the 90-day minimum.</span>
+            </label>
+            <p class="err" data-error-for="agreeRefund"></p>
+          </div>
+          <button class="btn" type="submit">Request the invoice</button>
+        </form>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap foot-grid">
+        <div>
+          <a class="mark" href="index.html">Map Pack Desk</a>
+          <p><a href="mailto:desk@maps.codlinex.com">desk@maps.codlinex.com</a></p>
+        </div>
+        <p>No card collection on maps.codlinex.com. Invoice follows only if we accept the shop.</p>
+        <nav class="legal-nav" aria-label="Legal">
+          <a href="terms.html">Terms</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="disclaimer.html">Disclaimer</a>
+          <a href="refund.html">Refunds</a>
+        </nav>
+      </div>
+    </footer>
+    <script src="form.js"></script>
+  </body>
+</html>
